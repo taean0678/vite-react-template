@@ -1,14 +1,384 @@
-<!doctype html>
-<html lang="en">
-	<head>
-		<meta charset="UTF-8" />
-		<link rel="icon" type="image/svg+xml" href="/vite.svg" />
-		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<title>Vite + React + TS</title>
-	</head>
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>김가빈의 탐라맛 양카</title>
+    <!-- 카카오톡 공유 미리보기(OG) 설정 -->
+    <meta property="og:title" content="김가빈의 탐라맛 양카">
+    <meta property="og:description" content="프리미엄 BMW의 새로운 Hallabong Edition을 경험해 보세요">
+    <meta property="og:url" content="https://queengabin.bmw428i.workers.dev/">
+    <style>
+        * { box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body {
+            margin: 0;
+            background-color: #0b0b0b;
+            color: #ffffff;
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+            padding-bottom: 120px;
+        }
 
-	<body>
-		<div id="root"></div>
-		<script type="module" src="/src/react-app/main.tsx"></script>
-	</body>
+        /* 1. 상단 고정 헤더 네비게이션 바 */
+        .header-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 70px;
+            background: rgba(10, 10, 10, 0.85);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 40px;
+            z-index: 1000;
+        }
+        .header-logo {
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: #fff;
+            text-decoration: none;
+            letter-spacing: -0.5px;
+        }
+        .header-menu {
+            display: flex;
+            gap: 30px;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+        .header-menu a {
+            color: #ccc;
+            text-decoration: none;
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+        .header-menu a:hover {
+            color: #e63946;
+        }
+
+        /* 2. 메인 히어로 섹션 */
+        .hero {
+            height: 100vh;
+            background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.85)), url('428i.png') center/cover;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 20px;
+            padding-top: 70px;
+        }
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            letter-spacing: -1px;
+            font-weight: 800;
+        }
+        .hero p {
+            font-size: 1.25rem;
+            color: #bbb;
+            margin-bottom: 40px;
+        }
+
+        /* 3. 콘텐츠 공통 섹션 스타일 */
+        .content-section {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 100px 20px 40px;
+            text-align: center;
+        }
+        .section-title {
+            font-size: 2.2rem;
+            font-weight: 800;
+            margin-bottom: 15px;
+            letter-spacing: -1px;
+        }
+        .section-subtitle {
+            font-size: 1.05rem;
+            color: #888;
+            margin-bottom: 50px;
+        }
+
+        /* 4. 그리드 카드 레이아웃 */
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        .card {
+            background: #141414;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            padding: 35px 25px;
+            text-align: left;
+            transition: transform 0.3s, border-color 0.3s;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(230, 57, 70, 0.5);
+        }
+        .card-icon {
+            font-size: 2rem;
+            margin-bottom: 15px;
+            display: inline-block;
+        }
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            color: #ffffff;
+        }
+        .card-desc {
+            font-size: 0.95rem;
+            color: #aaa;
+            line-height: 1.6;
+        }
+
+        /* 강조 카드 (새로 태어나다 전용) */
+        .legend-card {
+            background: linear-gradient(135deg, #1c1412 0%, #141414 100%);
+            border: 1px solid rgba(230, 81, 0, 0.4);
+            grid-column: 1 / -1;
+            padding: 50px 40px;
+            text-align: center;
+        }
+        .legend-card .card-title {
+            font-size: 1.6rem;
+            color: #ff9233;
+            margin-bottom: 20px;
+        }
+        .legend-card .card-desc {
+            font-size: 1.2rem;
+            color: #eee;
+            font-weight: 500;
+            line-height: 1.8;
+        }
+
+        /* 5. 하단 고정 신청 폼 바 */
+        .bottom-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: rgba(18, 18, 18, 0.95);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid rgba(255,255,255,0.1);
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            z-index: 100;
+            transition: transform 0.35s ease-in-out;
+            transform: translateY(0);
+        }
+
+        /* 아래 스크롤 시 숨겨지는 클래스 */
+        .bottom-bar.hide {
+            transform: translateY(100%);
+        }
+
+        .bottom-bar input {
+            background: #1e1e1e;
+            border: 1px solid #333;
+            color: #fff;
+            padding: 14px 16px;
+            border-radius: 6px;
+            font-size: 1rem;
+            width: 220px;
+            outline: none;
+        }
+        .bottom-bar input:focus {
+            border-color: #e63946;
+        }
+        .bottom-bar button {
+            background: #e63946;
+            color: #fff;
+            border: none;
+            padding: 14px 28px;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .bottom-bar button:hover {
+            background: #d62828;
+        }
+
+        /* 모바일 반응형 디자인 */
+        @media (max-width: 768px) {
+            .header-nav { padding: 0 20px; }
+            .header-menu { gap: 15px; }
+            .header-menu a { font-size: 0.85rem; }
+            .hero h1 { font-size: 2.2rem; }
+            .section-title { font-size: 1.8rem; }
+            .bottom-bar {
+                flex-direction: column;
+                align-items: stretch;
+                padding: 15px;
+            }
+            .bottom-bar input, .bottom-bar button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 1. 상단 네비게이션 헤더 -->
+    <header class="header-nav">
+        <a href="#" class="header-logo">탐라맛 양카</a>
+        <ul class="header-menu">
+            <li><a href="#about-428i">428i 란?</a></li>
+            <li><a href="#why-bmw">BMW가 좋은 이유?</a></li>
+            <li><a href="#reborn">새로 태어나다</a></li>
+        </ul>
+    </header>
+
+    <!-- 2. 메인 히어로 섹션 -->
+    <section class="hero">
+        <h1>김가빈의 탐라맛 양카</h1>
+        <p>프리미엄 BMW의 새로운 Hallabong Edition을 경험해 보세요</p>
+    </section>
+
+    <!-- 3. 메뉴 1: 428i 란? -->
+    <section id="about-428i" class="content-section">
+        <h2 class="section-title">428i 란?</h2>
+        <p class="section-subtitle">BMW F32 쿠페 라인업의 상징적인 스포츠 다이내믹 모델</p>
+        <div class="card-grid">
+            <div class="card">
+                <span class="card-icon">⚡</span>
+                <div class="card-title">2.0L 트윈파워 터보</div>
+                <div class="card-desc">245마력의 파워풀한 가속 성능과 폭발적인 응답성을 선사하는 고성능 터보 엔진.</div>
+            </div>
+            <div class="card">
+                <span class="card-icon">⚖️</span>
+                <div class="card-title">이상적인 50:50 무게 배분</div>
+                <div class="card-desc">완벽한 전후 무게 밸런스로 코너링 시 비현실적인 코너링 안정감과 그립력을 발휘합니다.</div>
+            </div>
+            <div class="card">
+                <span class="card-icon">🏎️</span>
+                <div class="card-title">쿠페 고유의 프레임리스 도어</div>
+                <div class="card-desc">창틀이 없는 프레임리스 도어와 낮게 깔린 매끄러운 루프 라인이 완성하는 압도적 실루엣.</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 4. 메뉴 2: BMW가 좋은 이유? -->
+    <section id="why-bmw" class="content-section">
+        <h2 class="section-title">BMW가 좋은 이유?</h2>
+        <p class="section-subtitle">단순한 이동 수단을 넘어선 질주 본능과 순수한 운전의 즐거움</p>
+        <div class="card-grid">
+            <div class="card">
+                <span class="card-icon">🔥</span>
+                <div class="card-title">Sheer Driving Pleasure</div>
+                <div class="card-desc">스티어링 휠을 돌리는 모든 순간 전달되는 정교한 손맛과 명확한 피드백.</div>
+            </div>
+            <div class="card">
+                <span class="card-icon">🛠️</span>
+                <div class="card-title">단단하고 탄탄한 섀시</div>
+                <div class="card-desc">고속 주행에서도 흔들림 없이 바닥에 깔려 나가는 독일 프리미엄 섀시 기술력.</div>
+            </div>
+            <div class="card">
+                <span class="card-icon">🍊</span>
+                <div class="card-title">제주 도로 최적화 감성</div>
+                <div class="card-desc">제주의 해안도로와 와인딩 코스에서 최고의 퍼포먼스를 발휘하는 차체 밸런스.</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 5. 메뉴 3: 새로 태어나다 -->
+    <section id="reborn" class="content-section">
+        <h2 class="section-title">새로 태어나다</h2>
+        <p class="section-subtitle">오렌지 빛깔 속에 숨겨진 스페셜 에디션 스토리</p>
+        <div class="card-grid">
+            <div class="card legend-card">
+                <span class="card-icon">🍊</span>
+                <div class="card-title">한라봉 에디션의 비화</div>
+                <div class="card-desc">
+                    오렌지 빛깔을 자랑하는 428i 에게는 슬픈 전설이 있다.<br>
+                    <strong>궁금하다면 차주에게 직접 문의 하도록.</strong>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 6. 하단 고정 신청 폼 바 -->
+    <div class="bottom-bar" id="bottomBar">
+        <input type="text" id="name" placeholder="성함 입력">
+        <input type="tel" id="phone" placeholder="연락처 (010-0000-0000)">
+        <input type="text" id="car" placeholder="시승 희망 요금">
+        <button onclick="submitForm()">김가빈의 팬 신청하기</button>
+    </div>
+
+    <script>
+        // --- 강화된 스크롤 감지 로직 (페이지 최하단 예외 처리) ---
+        let lastScrollY = window.scrollY;
+        const bottomBar = document.getElementById('bottomBar');
+
+        window.addEventListener('scroll', () => {
+            const currentScrollY = window.scrollY;
+            const windowHeight = window.innerHeight;
+            const documentHeight = document.documentElement.scrollHeight;
+
+            // 페이지 최하단(바닥 50px 이내)에 위치할 때는 무조건 숨김 유지 (바운스 방지)
+            const isBottom = (currentScrollY + windowHeight >= documentHeight - 50);
+
+            if (isBottom) {
+                bottomBar.classList.add('hide');
+            } else if (currentScrollY > lastScrollY && currentScrollY > 50) {
+                // 아래로 스크롤할 때는 숨김
+                bottomBar.classList.add('hide');
+            } else if (currentScrollY < lastScrollY) {
+                // 오직 명확하게 위로 스크롤할 때만 노출
+                bottomBar.classList.remove('hide');
+            }
+
+            lastScrollY = currentScrollY;
+        });
+
+        // --- 구글 시트 신청 전송 로직 ---
+        function submitForm() {
+            const name = document.getElementById('name').value;
+            const phone = document.getElementById('phone').value;
+            const car = document.getElementById('car').value;
+
+            if(!name || !phone) {
+                alert('성함과 연락처를 정확히 입력해주세요.');
+                return;
+            }
+
+            const scriptURL = 'https://script.google.com/macros/s/AKfycbyg1-ZgwEK4vYni7dU7SN3b5sYAMXF246FLKaBopBJylumvhL0u6nU03rc0Maf5YrIf/exec'; 
+
+            const btn = document.querySelector('.bottom-bar button');
+            btn.innerText = '신청 중...';
+            btn.disabled = true;
+
+            fetch(scriptURL, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name: name, phone: phone, car: car })
+            })
+            .then(response => {
+                alert('신청이 정상적으로 완료되었습니다!');
+                document.getElementById('name').value = '';
+                document.getElementById('phone').value = '';
+                document.getElementById('car').value = '';
+                btn.innerText = '김가빈의 팬 신청하기';
+                btn.disabled = false;
+            })
+            .catch(error => {
+                alert('전송 중 오류가 발생했습니다. 다시 시도해주세요.');
+                console.error('Error!', error);
+                btn.innerText = '김가빈의 팬 신청하기';
+                btn.disabled = false;
+            });
+        }
+    </script>
+</body>
 </html>
